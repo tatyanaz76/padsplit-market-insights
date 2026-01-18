@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PadSplit Market Insights</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+      color: white;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      opacity: 0.8;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .card h2 {
+      color: #1e3a5f;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #2d5a87;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #2d5a87;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1e3a5f;
+    }
+
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #2d5a87;
+      color: #2d5a87;
+    }
+
+    .btn-outline:hover {
+      background: #2d5a87;
+      color: white;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* City Stats */
+    .city-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: #f5f7fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-box .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d5a87;
+    }
+
+    .stat-box .label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Zip Code Grid */
+    .zip-controls {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .zip-controls span {
+      color: #666;
+    }
+
+    .zip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .zip-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .zip-item:hover {
+      border-color: #2d5a87;
+    }
+
+    .zip-item.selected {
+      background: #e3f2fd;
+      border-color: #2d5a87;
+    }
+
+    .zip-item input {
+      cursor: pointer;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 24px;
+      background: #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2d5a87, #4a90c2);
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .progress-text {
+      margin-top: 10px;
+      text-align: center;
+      color: #666;
+    }
+
+    /* Results Table */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .results-table th, .results-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .results-table th {
+      background: #f5f7fa;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .results-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .results-table .no-data {
+      color: #999;
+      font-style: italic;
+    }
+
+    .results-table .status-active {
+      color: #2e7d32;
+    }
+
+    .results-table .status-nodata {
+      color: #f57c00;
+    }
+
+    /* Sortable Headers */
+    .results-table th {
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .results-table th:hover {
+      background: #e8ecf0;
+    }
+
+    .th-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .th-icons {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .sort-icon, .filter-icon {
+      font-size: 12px;
+      opacity: 0.4;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+
+    .sort-icon:hover, .filter-icon:hover {
+      opacity: 1;
+      background: #ddd;
+    }
+
+    .sort-icon.active {
+      opacity: 1;
+      color: #2d5a87;
+    }
+
+    .filter-icon.active {
+      opacity: 1;
+      color: #28a745;
+    }
+
+    /* Filter Dropdown */
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 100;
+      min-width: 180px;
+      display: none;
+    }
+
+    .filter-dropdown.show {
+      display: block;
+    }
+
+    .filter-dropdown input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .filter-dropdown input:focus {
+      outline: none;
+      border-color: #2d5a87;
+    }
+
+    .filter-dropdown .filter-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .filter-dropdown .filter-actions button {
+      flex: 1;
+      padding: 6px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .filter-dropdown .btn-apply {
+      background: #2d5a87;
+      color: white;
+      border: none;
+    }
+
+    .filter-dropdown .btn-clear {
+      background: white;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    /* Results summary bar */
+    .results-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      background: #f5f7fa;
+      border-radius: 8px;
+    }
+
+    .results-controls .showing-count {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .results-controls .clear-filters {
+      font-size: 13px;
+      color: #2d5a87;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .results-controls .clear-filters:hover {
+      color: #1e3a5f;
+    }
+
+    /* User Info */
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .user-info .email {
+      font-weight: 600;
+    }
+
+    .user-info .btn {
+      padding: 8px 20px;
+      font-size: 14px;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .loading-box .spinner {
+      width: 40px;
+      height: 40px;
+      border-color: #e0e0e0;
+      border-top-color: #2d5a87;
+      margin: 0 auto 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PadSplit Market Insights</h1>
+      <p>Extract market data for any city and export to Excel</p>
+    </header>
+
+    <!-- User Info (shown when logged in) -->
+    <div id="userInfo" class="user-info hidden">
+      <span>Logged in as: <span class="email" id="userEmail"></span></span>
+      <button class="btn btn-outline" onclick="logout()" style="background: rgba(255,255,255,0.2); color: white; border-color: white;">Logout</button>
+    </div>
+
+    <!-- Step 1: Login -->
+    <div id="loginSection" class="card">
+      <h2>Step 1: Login to PadSplit</h2>
+      <div id="loginError" class="error hidden"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Your PadSplit password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+          Login to PadSplit
+        </button>
+      </form>
+    </div>
+
+    <!-- Step 2: Select City -->
+    <div id="citySection" class="card hidden">
+      <h2>Step 2: Select City</h2>
+      <div class="form-group">
+        <label for="citySelect">Choose a City</label>
+        <select id="citySelect">
+          <option value="">-- Select a city --</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="loadZipcodesBtn" disabled onclick="loadZipcodes()">
+        Load Zip Codes
+      </button>
+    </div>
+
+    <!-- Step 3: Select Zip Codes -->
+    <div id="zipSection" class="card hidden">
+      <h2>Step 3: Select Zip Codes</h2>
+
+      <div id="cityStats" class="city-stats"></div>
+
+      <div class="zip-controls">
+        <button class="btn btn-outline" onclick="selectAllZips()">Select All</button>
+        <button class="btn btn-outline" onclick="deselectAllZips()">Deselect All</button>
+        <span id="selectedCount">0 selected</span>
+      </div>
+
+      <div id="zipGrid" class="zip-grid"></div>
+
+      <button class="btn btn-primary" id="scrapeBtn" disabled onclick="startScraping()">
+        Scrape Selected Zip Codes
+      </button>
+    </div>
+
+    <!-- Step 4: Progress -->
+    <div id="progressSection" class="card hidden">
+      <h2>Step 4: Scraping in Progress</h2>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+        </div>
+        <div class="progress-text" id="progressText">Starting...</div>
+      </div>
+    </div>
+
+    <!-- Step 5: Results -->
+    <div id="resultsSection" class="card hidden">
+      <h2>Results: <span id="resultsCityName" style="color: #2d5a87;"></span></h2>
+      <div id="resultsSummary" class="success"></div>
+
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-success" id="exportBtn" onclick="exportToExcel()">
+          Download Excel File
+        </button>
+        <button class="btn btn-primary" onclick="saveResults()" style="background: #17a2b8;">
+          Save Results to Downloads
+        </button>
+        <button class="btn btn-outline" onclick="startOver()">
+          Start New Search
+        </button>
+      </div>
+
+      <div class="results-controls">
+        <span class="showing-count" id="showingCount">Showing all results</span>
+        <span class="clear-filters hidden" id="clearFilters" onclick="clearAllFilters()">Clear all filters</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="results-table" id="resultsTable">
+          <thead>
+            <tr>
+              <th data-column="zipCode" data-type="string">
+                <div class="th-content">
+                  <span>Zip Code</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('zipCode', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('zipCode', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-zipCode">
+                  <input type="text" placeholder="Search zip code..." onkeyup="applyFilterOnEnter('zipCode', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('zipCode')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('zipCode')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="status" data-type="string">
+                <div class="th-content">
+                  <span>Status</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('status', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('status', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-status">
+                  <input type="text" placeholder="active / no data..." onkeyup="applyFilterOnEnter('status', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('status')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('status')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="activeUnits" data-type="number">
+                <div class="th-content">
+                  <span>Active Units</span>
+                  <div class="th-icons">
+                    <span class="sort-icon active" onclick="sortByColumn('activeUnits', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('activeUnits', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-activeUnits">
+                  <input type="text" placeholder="e.g. >10 or 50" onkeyup="applyFilterOnEnter('activeUnits', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('activeUnits')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('activeUnits')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="upcomingUnits" data-type="number">
+                <div class="th-content">
+                  <span>Upcoming</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('upcomingUnits', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('upcomingUnits', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-upcomingUnits">
+                  <input type="text" placeholder="e.g. >5 or 10" onkeyup="applyFilterOnEnter('upcomingUnits', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('upcomingUnits')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('upcomingUnits')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="sharedBathroomPrice" data-type="number">
+                <div class="th-content">
+                  <span>Shared $/wk</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('sharedBathroomPrice', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('sharedBathroomPrice', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-sharedBathroomPrice">
+                  <input type="text" placeholder="e.g. >150" onkeyup="applyFilterOnEnter('sharedBathroomPrice', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('sharedBathroomPrice')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('sharedBathroomPrice')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="privateBathroomPrice" data-type="number">
+                <div class="th-content">
+                  <span>Private $/wk</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('privateBathroomPrice', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('privateBathroomPrice', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-privateBathroomPrice">
+                  <input type="text" placeholder="e.g. >180" onkeyup="applyFilterOnEnter('privateBathroomPrice', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('privateBathroomPrice')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('privateBathroomPrice')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="averageOccupancy" data-type="number">
+                <div class="th-content">
+                  <span>Occupancy</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('averageOccupancy', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('averageOccupancy', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-averageOccupancy">
+                  <input type="text" placeholder="e.g. >90" onkeyup="applyFilterOnEnter('averageOccupancy', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('averageOccupancy')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('averageOccupancy')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="daysToFirstBooking" data-type="number">
+                <div class="th-content">
+                  <span>Days to 1st</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('daysToFirstBooking', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('daysToFirstBooking', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-daysToFirstBooking">
+                  <input type="text" placeholder="e.g. <14" onkeyup="applyFilterOnEnter('daysToFirstBooking', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('daysToFirstBooking')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('daysToFirstBooking')">Apply</button>
+                  </div>
+                </div>
+              </th>
+              <th data-column="daysTo80Booking" data-type="number">
+                <div class="th-content">
+                  <span>Days to 80%</span>
+                  <div class="th-icons">
+                    <span class="sort-icon" onclick="sortByColumn('daysTo80Booking', event)">&#9650;&#9660;</span>
+                    <span class="filter-icon" onclick="toggleFilter('daysTo80Booking', event)">&#9881;</span>
+                  </div>
+                </div>
+                <div class="filter-dropdown" id="filter-daysTo80Booking">
+                  <input type="text" placeholder="e.g. <30" onkeyup="applyFilterOnEnter('daysTo80Booking', event)">
+                  <div class="filter-actions">
+                    <button class="btn-clear" onclick="clearFilter('daysTo80Booking')">Clear</button>
+                    <button class="btn-apply" onclick="applyFilter('daysTo80Booking')">Apply</button>
+                  </div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div id="loadingText">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let cities = [];
+    let selectedCity = null;
+    let zipCodes = [];
+    let currentSessionId = null;
+
+    // Results state for sorting/filtering
+    let allResults = [];
+    let filteredResults = [];
+    let currentSort = { column: 'activeUnits', direction: 'desc' };
+    let activeFilters = {};
+
+    // Elements
+    const loginSection = document.getElementById('loginSection');
+    const citySection = document.getElementById('citySection');
+    const zipSection = document.getElementById('zipSection');
+    const progressSection = document.getElementById('progressSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const userInfo = document.getElementById('userInfo');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // Login Form
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const loginError = document.getElementById('loginError');
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+      loginError.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Success
+        cities = data.cities;
+        populateCitySelect();
+
+        document.getElementById('userEmail').textContent = email;
+        userInfo.classList.remove('hidden');
+        loginSection.classList.add('hidden');
+        citySection.classList.remove('hidden');
+
+      } catch (error) {
+        loginError.textContent = error.message;
+        loginError.classList.remove('hidden');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login to PadSplit';
+      }
+    });
+
+    // Populate city select
+    function populateCitySelect() {
+      const select = document.getElementById('citySelect');
+      select.innerHTML = '<option value="">-- Select a city --</option>';
+
+      cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city.id;
+        option.textContent = `${city.name} (${city.marketType})`;
+        option.dataset.name = city.name;
+        select.appendChild(option);
+      });
+
+      select.addEventListener('change', () => {
+        document.getElementById('loadZipcodesBtn').disabled = !select.value;
+        selectedCity = cities.find(c => c.id == select.value);
+      });
+    }
+
+    // Load zip codes for selected city
+    async function loadZipcodes() {
+      if (!selectedCity) return;
+
+      showLoading('Loading zip codes...');
+
+      try {
+        const res = await fetch(`/api/city/${selectedCity.id}/zipcodes`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to load zip codes');
+        }
+
+        zipCodes = data.zipCodes;
+
+        // Display city stats
+        const statsHtml = `
+          <div class="stat-box"><div class="value">${data.stats.activeRooms.toLocaleString()}</div><div class="label">Active Rooms</div></div>
+          <div class="stat-box"><div class="value">${data.stats.averageOccupancy}%</div><div class="label">Avg Occupancy</div></div>
+          <div class="stat-box"><div class="value">$${data.stats.sharedBathroomPrice}</div><div class="label">Shared Bath/wk</div></div>
+          <div class="stat-box"><div class="value">$${data.stats.privateBathroomPrice}</div><div class="label">Private Bath/wk</div></div>
+          <div class="stat-box"><div class="value">${data.stats.daysToFirstBooking}</div><div class="label">Days to 1st</div></div>
+          <div class="stat-box"><div class="value">${data.zipCodes.length}</div><div class="label">Zip Codes</div></div>
+        `;
+        document.getElementById('cityStats').innerHTML = statsHtml;
+
+        // Display zip codes grid
+        const gridHtml = zipCodes.map(zip => `
+          <label class="zip-item" data-zip="${zip}">
+            <input type="checkbox" value="${zip}" onchange="updateSelectedCount()">
+            ${zip}
+          </label>
+        `).join('');
+        document.getElementById('zipGrid').innerHTML = gridHtml;
+
+        citySection.classList.add('hidden');
+        zipSection.classList.remove('hidden');
+        updateSelectedCount();
+
+      } catch (error) {
+        alert('Error: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Select/Deselect all zip codes
+    function selectAllZips() {
+      document.querySelectorAll('#zipGrid input[type="checkbox"]').forEach(cb => {
+        cb.checked = true;
+        cb.closest('.zip-item').classList.add('selected');
+      });
+      updateSelectedCount();
+    }
+
+    function deselectAllZips() {
+      document.querySelectorAll('#zipGrid input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.zip-item').classList.remove('selected');
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const checkboxes = document.querySelectorAll('#zipGrid input[type="checkbox"]');
+      const selected = document.querySelectorAll('#zipGrid input[type="checkbox"]:checked');
+
+      checkboxes.forEach(cb => {
+        cb.closest('.zip-item').classList.toggle('selected', cb.checked);
+      });
+
+      document.getElementById('selectedCount').textContent = `${selected.length} of ${checkboxes.length} selected`;
+      document.getElementById('scrapeBtn').disabled = selected.length === 0;
+    }
+
+    // Start scraping
+    async function startScraping() {
+      const selectedZips = Array.from(document.querySelectorAll('#zipGrid input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
+
+      if (selectedZips.length === 0) {
+        alert('Please select at least one zip code');
+        return;
+      }
+
+      zipSection.classList.add('hidden');
+      progressSection.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cityName: selectedCity.name,
+            zipCodes: selectedZips
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to start scraping');
+        }
+
+        currentSessionId = data.sessionId;
+        pollProgress();
+
+      } catch (error) {
+        alert('Error: ' + error.message);
+        zipSection.classList.remove('hidden');
+        progressSection.classList.add('hidden');
+      }
+    }
+
+    // Poll scraping progress
+    async function pollProgress() {
+      try {
+        const res = await fetch(`/api/scrape/${currentSessionId}/progress`);
+        const data = await res.json();
+
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        progressFill.style.width = `${data.progress}%`;
+        progressFill.textContent = `${data.progress}%`;
+        progressText.textContent = `Scraping ${data.currentZipCode || '...'} (${data.completedZipCodes}/${data.totalZipCodes})`;
+
+        if (data.status === 'running') {
+          setTimeout(pollProgress, 1000);
+        } else if (data.status === 'completed') {
+          loadResults();
+        } else if (data.status === 'error') {
+          alert('Scraping error: ' + data.error);
+          startOver();
+        }
+
+      } catch (error) {
+        console.error('Progress poll error:', error);
+        setTimeout(pollProgress, 2000);
+      }
+    }
+
+    // Load results
+    async function loadResults() {
+      try {
+        const res = await fetch(`/api/scrape/${currentSessionId}/results`);
+        const data = await res.json();
+
+        const activeCount = data.results.filter(r => r.status === 'active').length;
+        const noDataCount = data.results.filter(r => r.status === 'no_data' || r.status === 'no_active').length;
+        const duration = Math.round(data.duration / 1000);
+
+        // Set city name in header
+        document.getElementById('resultsCityName').textContent = selectedCity ? selectedCity.name : 'Unknown City';
+
+        document.getElementById('resultsSummary').innerHTML = `
+          Completed in ${duration} seconds.
+          <strong>${activeCount}</strong> zip codes with data,
+          <strong>${noDataCount}</strong> with no active PadSplits.
+          <br><small style="color: #666;">Run date: ${new Date().toLocaleDateString()}</small>
+        `;
+
+        // Store results and apply default sort
+        allResults = data.results;
+        activeFilters = {};
+        currentSort = { column: 'activeUnits', direction: 'desc' };
+
+        // Apply initial sort and render
+        applyFiltersAndSort();
+
+        progressSection.classList.add('hidden');
+        resultsSection.classList.remove('hidden');
+
+      } catch (error) {
+        alert('Error loading results: ' + error.message);
+      }
+    }
+
+    // Sort and filter logic
+    function applyFiltersAndSort() {
+      // Start with all results
+      filteredResults = [...allResults];
+
+      // Apply filters
+      Object.keys(activeFilters).forEach(column => {
+        const filterValue = activeFilters[column];
+        if (!filterValue) return;
+
+        filteredResults = filteredResults.filter(r => {
+          const value = r[column];
+
+          // Handle string columns (zipCode, status)
+          if (column === 'zipCode' || column === 'status') {
+            const displayValue = column === 'status'
+              ? (r.status === 'active' ? 'Active' : 'No Data')
+              : String(value);
+            return displayValue.toLowerCase().includes(filterValue.toLowerCase());
+          }
+
+          // Handle numeric columns with operators
+          if (value === null || value === undefined) return false;
+
+          const numValue = parseFloat(value);
+          if (isNaN(numValue)) return false;
+
+          // Check for operators: >, <, >=, <=, =
+          const match = filterValue.match(/^([<>=]+)?\s*(\d+\.?\d*)$/);
+          if (match) {
+            const operator = match[1] || '=';
+            const filterNum = parseFloat(match[2]);
+
+            switch(operator) {
+              case '>': return numValue > filterNum;
+              case '<': return numValue < filterNum;
+              case '>=': return numValue >= filterNum;
+              case '<=': return numValue <= filterNum;
+              case '=':
+              default: return numValue === filterNum;
+            }
+          }
+          return true;
+        });
+      });
+
+      // Sort results - NULL values always at the end
+      filteredResults.sort((a, b) => {
+        const col = currentSort.column;
+        let aVal = a[col];
+        let bVal = b[col];
+
+        // NULL values go to the end regardless of sort direction
+        const aIsNull = aVal === null || aVal === undefined;
+        const bIsNull = bVal === null || bVal === undefined;
+
+        if (aIsNull && bIsNull) return 0;
+        if (aIsNull) return 1;  // a goes to end
+        if (bIsNull) return -1; // b goes to end
+
+        // Handle status column specially
+        if (col === 'status') {
+          aVal = a.status === 'active' ? 1 : 0;
+          bVal = b.status === 'active' ? 1 : 0;
+        }
+
+        // Compare values
+        let comparison = 0;
+        if (typeof aVal === 'string') {
+          comparison = aVal.localeCompare(bVal);
+        } else {
+          comparison = aVal - bVal;
+        }
+
+        return currentSort.direction === 'asc' ? comparison : -comparison;
+      });
+
+      renderResults();
+      updateSortIcons();
+      updateFilterIcons();
+      updateShowingCount();
+    }
+
+    function renderResults() {
+      const tbody = document.getElementById('resultsBody');
+      tbody.innerHTML = filteredResults.map(r => `
+        <tr>
+          <td>${r.zipCode}</td>
+          <td class="${r.status === 'active' ? 'status-active' : 'status-nodata'}">
+            ${r.status === 'active' ? 'Active' : 'No Data'}
+          </td>
+          <td>${r.activeUnits ?? '-'}</td>
+          <td>${r.upcomingUnits ?? '-'}</td>
+          <td>${r.sharedBathroomPrice ? '$' + r.sharedBathroomPrice : '-'}</td>
+          <td>${r.privateBathroomPrice ? '$' + r.privateBathroomPrice : '-'}</td>
+          <td>${r.averageOccupancy ? r.averageOccupancy + '%' : '-'}</td>
+          <td>${r.daysToFirstBooking ?? '-'}</td>
+          <td>${r.daysTo80Booking ?? '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Sorting
+    function sortByColumn(column, event) {
+      event.stopPropagation();
+
+      if (currentSort.column === column) {
+        // Toggle direction
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        // New column - default to desc for numbers, asc for strings
+        currentSort.column = column;
+        currentSort.direction = (column === 'zipCode' || column === 'status') ? 'asc' : 'desc';
+      }
+
+      applyFiltersAndSort();
+    }
+
+    function updateSortIcons() {
+      document.querySelectorAll('.sort-icon').forEach(icon => {
+        icon.classList.remove('active');
+        const th = icon.closest('th');
+        if (th.dataset.column === currentSort.column) {
+          icon.classList.add('active');
+          icon.innerHTML = currentSort.direction === 'asc' ? '&#9650;' : '&#9660;';
+        } else {
+          icon.innerHTML = '&#9650;&#9660;';
+        }
+      });
+    }
+
+    // Filtering
+    function toggleFilter(column, event) {
+      event.stopPropagation();
+
+      // Close all other dropdowns
+      document.querySelectorAll('.filter-dropdown').forEach(dd => {
+        if (dd.id !== `filter-${column}`) {
+          dd.classList.remove('show');
+        }
+      });
+
+      const dropdown = document.getElementById(`filter-${column}`);
+      dropdown.classList.toggle('show');
+
+      if (dropdown.classList.contains('show')) {
+        dropdown.querySelector('input').focus();
+      }
+    }
+
+    function applyFilter(column) {
+      const dropdown = document.getElementById(`filter-${column}`);
+      const input = dropdown.querySelector('input');
+      const value = input.value.trim();
+
+      if (value) {
+        activeFilters[column] = value;
+      } else {
+        delete activeFilters[column];
+      }
+
+      dropdown.classList.remove('show');
+      applyFiltersAndSort();
+    }
+
+    function applyFilterOnEnter(column, event) {
+      if (event.key === 'Enter') {
+        applyFilter(column);
+      }
+    }
+
+    function clearFilter(column) {
+      const dropdown = document.getElementById(`filter-${column}`);
+      dropdown.querySelector('input').value = '';
+      delete activeFilters[column];
+      dropdown.classList.remove('show');
+      applyFiltersAndSort();
+    }
+
+    function clearAllFilters() {
+      activeFilters = {};
+      document.querySelectorAll('.filter-dropdown input').forEach(input => {
+        input.value = '';
+      });
+      applyFiltersAndSort();
+    }
+
+    function updateFilterIcons() {
+      document.querySelectorAll('.filter-icon').forEach(icon => {
+        const th = icon.closest('th');
+        const column = th.dataset.column;
+        icon.classList.toggle('active', !!activeFilters[column]);
+      });
+
+      const clearBtn = document.getElementById('clearFilters');
+      const hasFilters = Object.keys(activeFilters).length > 0;
+      clearBtn.classList.toggle('hidden', !hasFilters);
+    }
+
+    function updateShowingCount() {
+      const showing = filteredResults.length;
+      const total = allResults.length;
+      const countEl = document.getElementById('showingCount');
+
+      if (showing === total) {
+        countEl.textContent = `Showing all ${total} results`;
+      } else {
+        countEl.textContent = `Showing ${showing} of ${total} results`;
+      }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.filter-dropdown') && !e.target.closest('.filter-icon')) {
+        document.querySelectorAll('.filter-dropdown').forEach(dd => {
+          dd.classList.remove('show');
+        });
+      }
+    });
+
+    // Export to Excel
+    function exportToExcel() {
+      window.location.href = `/api/scrape/${currentSessionId}/export`;
+    }
+
+    // Save results to Downloads with city name and date
+    async function saveResults() {
+      const cityName = selectedCity ? selectedCity.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Unknown';
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `PadSplit_${cityName}_${date}.xlsx`;
+
+      try {
+        const response = await fetch(`/api/scrape/${currentSessionId}/export`);
+        const blob = await response.blob();
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+
+        // Show confirmation
+        alert(`File saved as: ${filename}\n\nCheck your Downloads folder.`);
+      } catch (error) {
+        alert('Error saving file: ' + error.message);
+      }
+    }
+
+    // Start over
+    function startOver() {
+      resultsSection.classList.add('hidden');
+      progressSection.classList.add('hidden');
+      zipSection.classList.add('hidden');
+      citySection.classList.remove('hidden');
+      document.getElementById('citySelect').value = '';
+      document.getElementById('loadZipcodesBtn').disabled = true;
+      currentSessionId = null;
+    }
+
+    // Logout
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      location.reload();
+    }
+
+    // Loading helpers
+    function showLoading(text) {
+      document.getElementById('loadingText').textContent = text;
+      loadingOverlay.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      loadingOverlay.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
