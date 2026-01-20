@@ -362,6 +362,19 @@ app.post('/api/scrape', async (req, res) => {
   // Create unique scraping session ID
   const sessionId = `scrape_${Date.now()}`;
 
+  // Log scrape start
+  logActivity('SCRAPE_STARTED', {
+    email: req.session.email,
+    cityName,
+    zipCodeCount: zipCodes.length,
+    zipCodes: zipCodes.slice(0, 10).join(', ') + (zipCodes.length > 10 ? '...' : '')
+  }, req);
+
+  // Capture request info for logging (before async context is lost)
+  const userEmail = req.session.email;
+  const userIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+  const userAgent = req.headers['user-agent'] || 'unknown';
+
   // Initialize session state
   scrapingSessions.set(sessionId, {
     status: 'running',
@@ -371,7 +384,10 @@ app.post('/api/scrape', async (req, res) => {
     currentZipCode: null,
     results: [],
     startTime: Date.now(),
-    error: null
+    error: null,
+    userEmail,
+    userIp,
+    userAgent
   });
 
   // Start scraping in background
@@ -416,10 +432,40 @@ app.post('/api/scrape', async (req, res) => {
       scrapeState.status = 'completed';
       scrapeState.endTime = Date.now();
 
+      // Log scrape completion with results summary
+      const totalActiveUnits = scrapeState.results.reduce((sum, r) => sum + (r.activeUnits || 0), 0);
+      const successfulScrapes = scrapeState.results.filter(r => r.status === 'active').length;
+
+      const logEntry = JSON.stringify({
+        timestamp: new Date().toISOString(),
+        action: 'SCRAPE_COMPLETED',
+        ip: scrapeState.userIp,
+        userAgent: scrapeState.userAgent,
+        email: scrapeState.userEmail,
+        cityName: scrapeState.cityName,
+        zipCodesScraped: scrapeState.totalZipCodes,
+        successfulScrapes,
+        totalActiveUnits,
+        durationMs: scrapeState.endTime - scrapeState.startTime
+      }) + '\n';
+      fs.appendFileSync(LOG_FILE, logEntry);
+
     } catch (error) {
       const scrapeState = scrapingSessions.get(sessionId);
       scrapeState.status = 'error';
       scrapeState.error = error.message;
+
+      // Log scrape error
+      const logEntry = JSON.stringify({
+        timestamp: new Date().toISOString(),
+        action: 'SCRAPE_ERROR',
+        ip: scrapeState.userIp,
+        userAgent: scrapeState.userAgent,
+        email: scrapeState.userEmail,
+        cityName: scrapeState.cityName,
+        error: error.message
+      }) + '\n';
+      fs.appendFileSync(LOG_FILE, logEntry);
     } finally {
       if (browser) await browser.close();
     }
@@ -480,6 +526,13 @@ app.get('/api/scrape/:sessionId/export', async (req, res) => {
   if (session.status !== 'completed') {
     return res.status(400).json({ error: 'Scraping not completed yet' });
   }
+
+  // Log export action
+  logActivity('EXPORT_EXCEL', {
+    email: session.userEmail,
+    cityName: session.cityName,
+    zipCodesExported: session.results.length
+  }, req);
 
   try {
     const workbook = new ExcelJS.Workbook();
